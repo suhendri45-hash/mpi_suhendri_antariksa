@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎉 KUIS BINTANG JUARA: PETUALANGAN MULTI-GAME 🎉</title>
+    <!-- Tailwind CSS for futuristic UI styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font: Inter & Orbitron for Sci-Fi aesthetic -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+            color: #f8fafc;
+            overflow: hidden;
+            user-select: none;
+        }
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .clay-btn {
+            border-radius: 1rem;
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.3);
+            transition: all 0.1s ease;
+        }
+        .clay-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+        }
+        .neon-glow-cyan {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+        }
+        .neon-glow-purple {
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+        }
+        .neon-glow-pink {
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
+        }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; filter: drop-shadow(0 0 10px #38bdf8); }
+        }
+        .animate-pulse-glow {
+            animation: pulseGlow 2s infinite;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.3);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col justify-between p-3 box-border">
+
+    <header class="w-full h-16 glass-panel rounded-2xl px-6 flex items-center justify-between z-30 shrink-0">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-400 flex items-center justify-center neon-glow-cyan">
+                <span class="text-xl">🌌</span>
+            </div>
+            <div>
+                <h1 class="font-orbitron font-bold text-sm md:text-base text-cyan-400 tracking-wider">BINTANG JUARA</h1>
+                <p class="text-xs text-slate-400">IPA SMP — Tata Surya & Bumi</p>
+            </div>
+        </div>
+
+        <!-- Scores & Turn Indicator -->
+        <div class="flex items-center space-x-4 md:space-x-8">
+            <div id="scoreTeamA" class="px-4 py-1.5 rounded-xl bg-purple-900/40 border border-purple-500/50 flex items-center space-x-2">
+                <span class="text-xs font-semibold text-purple-300">TIM A:</span>
+                <span id="scoreValA" class="font-orbitron font-bold text-lg text-purple-400">0</span>
+            </div>
+            
+            <div id="turnIndicator" class="px-5 py-1.5 rounded-xl bg-cyan-950/80 border-2 border-cyan-400 text-cyan-300 font-orbitron text-xs md:text-sm tracking-wide neon-glow-cyan">
+                GILIRAN: TIM A (Soal 1-5)
+            </div>
+
+            <div id="scoreTeamB" class="px-4 py-1.5 rounded-xl bg-pink-900/40 border border-pink-500/50 flex items-center space-x-2">
+                <span class="text-xs font-semibold text-pink-300">TIM B:</span>
+                <span id="scoreValB" class="font-orbitron font-bold text-lg text-pink-400">0</span>
+            </div>
+        </div>
+
+        <!-- Teacher Control HUD Dropdown / Buttons -->
+        <div class="flex items-center space-x-2">
+            <button onclick="openModal('tpModal')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl text-xs font-semibold text-slate-300 transition">
+                📜 TP
+            </button>
+            <button onclick="toggleTeacherHUD()" class="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-semibold clay-btn neon-glow-cyan transition">
+                ⚙️ Kontrol Guru
+            </button>
+        </div>
+    </header>
+
+    <main id="mainContainer" class="w-full flex-grow my-3 relative overflow-hidden flex flex-col">
+        
+        <!-- VIEW 1: MAIN MENU / GAME SELECTION HUB -->
+        <div id="viewMenu" class="absolute inset-0 flex flex-col items-center justify-center p-4 z-20">
+            <div class="text-center mb-6">
+                <h2 class="font-orbitron text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 mb-2 animate-pulse-glow">
+                    PETUALANGAN MULTI-GAME
+                </h2>
+                <p class="text-slate-300 text-sm md:text-base max-w-xl mx-auto">
+                    Pilih arena misi antariksa di bawah ini untuk menguji pemahaman Anda seputar Tata Surya dan Bumi secara turn-based kompetitif!
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-5xl px-4">
+                <!-- Mode 1 Card -->
+                <div onclick="startMode(1)" class="glass-panel p-5 rounded-2xl hover:border-cyan-400 cursor-pointer transition transform hover:-translate-y-1 group">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div class="w-12 h-12 rounded-xl bg-cyan-500/20 border border-cyan-400 flex items-center justify-center text-2xl group-hover:scale-110 transition">🪐</div>
+                        <div>
+                            <h3 class="font-orbitron font-bold text-cyan-300">Pilihan Ganda</h3>
+                            <p class="text-xs text-slate-400">20 Tantangan Soal</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300">Uji pengetahuan dasar tata surya dengan memilih opsi jawaban yang tepat.</p>
+                </div>
+
+                <!-- Mode 2 Card -->
+                <div onclick="startMode(2)" class="glass-panel p-5 rounded-2xl hover:border-purple-400 cursor-pointer transition transform hover:-translate-y-1 group">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/20 border border-purple-400 flex items-center justify-center text-2xl group-hover:scale-110 transition">🧩</div>
+                        <div>
+                            <h3 class="font-orbitron font-bold text-purple-300">Drag & Drop Hybrid</h3>
+                            <p class="text-xs text-slate-400">20 Tantangan Item</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300">Pasangkan komponen planet & atmosfer dengan slot yang sesuai secara sentuh/tarik.</p>
+                </div>
+
+                <!-- Mode 3 Card -->
+                <div onclick="startMode(3)" class="glass-panel p-5 rounded-2xl hover:border-pink-400 cursor-pointer transition transform hover:-translate-y-1 group">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div class="w-12 h-12 rounded-xl bg-pink-500/20 border border-pink-400 flex items-center justify-center text-2xl group-hover:scale-110 transition">🃏</div>
+                        <div>
+                            <h3 class="font-orbitron font-bold text-pink-300">Matching Game</h3>
+                            <p class="text-xs text-slate-400">20 Pasangan Kartu</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300">Balik kartu 3D dan temukan pasangan istilah astronomi yang cocok.</p>
+                </div>
+
+                <!-- Mode 4 Card -->
+                <div onclick="startMode(4)" class="glass-panel p-5 rounded-2xl hover:border-emerald-400 cursor-pointer transition transform hover:-translate-y-1 group">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-400 flex items-center justify-center text-2xl group-hover:scale-110 transition">🔭</div>
+                        <div>
+                            <h3 class="font-orbitron font-bold text-emerald-300">Tebak Gambar</h3>
+                            <p class="text-xs text-slate-400">20 Tantangan Visual</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300">Buka kotak grid transparan secara bertahap dan tebak fenomena tata surya.</p>
+                </div>
+
+                <!-- Mode 5 Card -->
+                <div onclick="startMode(5)" class="glass-panel p-5 rounded-2xl hover:border-amber-400 cursor-pointer transition transform hover:-translate-y-1 group sm:col-span-2 lg:col-span-1">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div class="w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-400 flex items-center justify-center text-2xl group-hover:scale-110 transition">🚀</div>
+                        <div>
+                            <h3 class="font-orbitron font-bold text-amber-300">Educational Runner</h3>
+                            <p class="text-xs text-slate-400">20 Rintangan Roket</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300">Navigasikan roket melintasi asteroid dan gerbang jawaban benar!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: GAMEPLAY CONTAINER (Dynamic per mode) -->
+        <div id="viewGame" class="absolute inset-0 flex flex-col p-4 z-10 hidden">
+            <!-- Game Header Bar -->
+            <div class="flex items-center justify-between mb-4 bg-slate-900/60 p-3 rounded-xl border border-slate-700">
+                <button onclick="backToMenu()" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl text-xs font-semibold text-slate-200 transition">
+                    ⬅️ Kembali ke Menu
+                </button>
+                <div id="gameTitleHeader" class="font-orbitron font-bold text-cyan-400 text-sm md:text-base">
+                    Arena Permainan
+                </div>
+                <div id="gameProgressTracker" class="text-xs font-semibold text-slate-300">
+                    Tantangan 1 / 20
+                </div>
+            </div>
+
+            <!-- Dynamic Game Content Area -->
+            <div id="gameAreaContent" class="flex-grow flex flex-col items-center justify-center relative overflow-hidden">
+                <!-- Injected via JavaScript based on selected mode -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="w-full py-1 text-center text-[10px] text-slate-500 shrink-0">
+        🎉 KUIS BINTANG JUARA: PETUALANGAN MULTI-GAME | Dirancang Khusus untuk Pembelajaran Interaktif SMP Al Fityan
+    </footer>
+
+    <!-- TOAST NOTIFICATION BANNER -->
+    <div id="toastNotification" class="fixed bottom-6 right-6 z-50 transform translate-y-32 transition-transform duration-300 glass-panel px-5 py-3 rounded-2xl border-cyan-400 neon-glow-cyan flex items-center space-x-3">
+        <span class="text-2xl">🔔</span>
+        <div>
+            <h4 class="font-orbitron font-bold text-xs text-cyan-300">SISTEM PEMBERITAHUAN</h4>
+            <p id="toastMessage" class="text-xs text-slate-200">SOAL/MODE INI TELAH SELESAI DIJAWAB!</p>
+        </div>
+    </div>
+
+    <!-- TURN CHANGE HOLOGRAM BANNER MODAL -->
+    <div id="turnModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center hidden">
+        <div class="glass-panel p-8 rounded-3xl border-2 border-cyan-400 text-center max-w-md w-full neon-glow-cyan animate-pulse-glow">
+            <div class="text-5xl mb-4">🔔</div>
+            <h3 class="font-orbitron text-xl font-bold text-cyan-300 mb-2">PERGANTIAN GILIRAN!</h3>
+            <p id="turnModalText" class="text-sm text-slate-200 mb-6">SEKARANG GILIRAN TIM B MENJAWAB</p>
+            <button onclick="closeTurnModal()" class="w-full py-3 bg-cyan-600 hover:bg-cyan-500 font-orbitron font-bold text-sm text-white rounded-xl clay-btn neon-glow-cyan">
+                LANJUTKAN MISI 🚀
+            </button>
+        </div>
+    </div>
+
+    <!-- TUJUAN PEMBELAJARAN (TP) MODAL -->
+    <div id="tpModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center hidden">
+        <div class="glass-panel p-6 md:p-8 rounded-3xl border border-cyan-500 max-w-lg w-full relative">
+            <button onclick="closeModal('tpModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+            <div class="flex items-center space-x-3 mb-4">
+                <span class="text-2xl">📜</span>
+                <h3 class="font-orbitron font-bold text-lg text-cyan-300">Tujuan Pembelajaran</h3>
+            </div>
+            <p class="text-sm text-slate-300 leading-relaxed bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+                "Peserta didik mampu mengenal Tata Surya, memahami karakteristik Bumi, menjelaskan rotasi dan revolusi Bumi serta dampaknya terhadap kehidupan, serta menyajikan informasi tentang Tata Surya secara kreatif."
+            </p>
+            <button onclick="closeModal('tpModal')" class="mt-6 w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 font-orbitron font-bold text-xs text-white rounded-xl clay-btn">
+                MENGERTI
+            </button>
+        </div>
+    </div>
+
+    <!-- TEACHER CONTROL HUD OVERRIDE MODAL -->
+    <div id="teacherModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center hidden">
+        <div class="glass-panel p-6 md:p-8 rounded-3xl border border-purple-500 max-w-md w-full relative">
+            <button onclick="toggleTeacherHUD()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+            <div class="flex items-center space-x-3 mb-6">
+                <span class="text-2xl">⚙️</span>
+                <h3 class="font-orbitron font-bold text-lg text-purple-300">Kontrol Guru HUD</h3>
+            </div>
+            
+            <div class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="overrideTeam('A')" class="py-2.5 bg-purple-900/60 hover:bg-purple-800 border border-purple-500 rounded-xl font-semibold text-xs text-purple-200 transition">
+                        Pilih Tim A
+                    </button>
+                    <button onclick="overrideTeam('B')" class="py-2.5 bg-pink-900/60 hover:bg-pink-800 border border-pink-500 rounded-xl font-semibold text-xs text-pink-200 transition">
+                        Pilih Tim B
+                    </button>
+                </div>
+                <button onclick="backToMenu(); toggleTeacherHUD();" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl font-semibold text-xs text-slate-200 transition">
+                    Kembali ke Menu Utama
+                </button>
+                <button onclick="openModal('tpModal'); toggleTeacherHUD();" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl font-semibold text-xs text-slate-200 transition">
+                    Lihat Tujuan Pembelajaran
+                </button>
+                <button onclick="confirmResetGame()" class="w-full py-2.5 bg-red-900/40 hover:bg-red-900/60 border border-red-500 rounded-xl font-semibold text-xs text-red-300 transition">
+                    Reset Seluruh Game
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let gameState = {
+            currentTeam: 'A', // 'A' or 'B'
+            currentQuestionIndex: 0, // Global counter for turn switching (0 to 19 per mode)
+            scoreA: 0,
+            scoreB: 0,
+            activeMode: null,
+            modeProgress: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+            lockedItems: { 1: {}, 2: {}, 3: {}, 4: {}, 5: {} }
+        };
+
+        // Web Audio API Sound Synthesizer
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(800, now + 0.05);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                osc.start(now);
+                osc.stop(now + 0.05);
+            } else if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.linearRampToValueAtTime(100, now + 0.3);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'lock') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(880, now);
+                osc.frequency.exponentialRampToValueAtTime(440, now + 0.2);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            }
+        }
+
+        // UI Modal Helpers
+        function openModal(id) {
+            playSound('click');
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            playSound('click');
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function toggleTeacherHUD() {
+            playSound('click');
+            const modal = document.getElementById('teacherModal');
+            modal.classList.toggle('hidden');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toastNotification');
+            document.getElementById('toastMessage').innerText = msg;
+            toast.classList.remove('translate-y-32');
+            setTimeout(() => {
+                toast.classList.add('translate-y-32');
+            }, 3500);
+        }
+
+        function updateHUD() {
+            document.getElementById('scoreValA').innerText = gameState.scoreA;
+            document.getElementById('scoreValB').innerText = gameState.scoreB;
+            
+            // Turn rule: 1-5: Team A, 6-10: Team B, 11-15: Team A, 16-20: Team B (0-indexed: 0-4: A, 5-9: B, etc.)
+            let cycle = Math.floor(gameState.currentQuestionIndex / 5) % 2;
+            let expectedTeam = (cycle === 0) ? 'A' : 'B';
+            
+            if (gameState.currentTeam !== expectedTeam) {
+                let prevTeam = gameState.currentTeam;
+                gameState.currentTeam = expectedTeam;
+                triggerTurnChangeModal(expectedTeam);
+            }
+
+            let turnEl = document.getElementById('turnIndicator');
+            if (gameState.currentTeam === 'A') {
+                turnEl.innerText = `GILIRAN: TIM A (Soal ${gameState.currentQuestionIndex + 1})`;
+                turnEl.className = "px-5 py-1.5 rounded-xl bg-purple-950/80 border-2 border-purple-400 text-purple-300 font-orbitron text-xs md:text-sm tracking-wide neon-glow-purple";
+            } else {
+                turnEl.innerText = `GILIRAN: TIM B (Soal ${gameState.currentQuestionIndex + 1})`;
+                turnEl.className = "px-5 py-1.5 rounded-xl bg-pink-950/80 border-2 border-pink-400 text-pink-300 font-orbitron text-xs md:text-sm tracking-wide neon-glow-pink";
+            }
+        }
+
+        function triggerTurnChangeModal(team) {
+            playSound('lock');
+            document.getElementById('turnModalText').innerText = `SEKARANG GILIRAN TIM ${team} MENJAWAB`;
+            document.getElementById('turnModal').classList.remove('hidden');
+        }
+
+        function closeTurnModal() {
+            playSound('click');
+            document.getElementById('turnModal').classList.add('hidden');
+        }
+
+        function overrideTeam(team) {
+            playSound('click');
+            gameState.currentTeam = team;
+            toggleTeacherHUD();
+            updateHUD();
+            showToast(`Tim Aktif di-override ke Tim ${team}`);
+        }
+
+        function confirmResetGame() {
+            if (confirm("Apakah Anda yakin ingin mereset seluruh permainan dan skor?")) {
+                gameState.scoreA = 0;
+                gameState.scoreB = 0;
+                gameState.currentQuestionIndex = 0;
+                gameState.currentTeam = 'A';
+                gameState.lockedItems = { 1: {}, 2: {}, 3: {}, 4: {}, 5: {} };
+                toggleTeacherHUD();
+                backToMenu();
+                showToast("Game berhasil direset!");
+            }
+        }
+
+        // Navigation between Menu & Game Views
+        function startMode(modeNum) {
+            playSound('click');
+            gameState.activeMode = modeNum;
+            gameState.currentQuestionIndex = gameState.modeProgress[modeNum] || 0;
+            
+            document.getElementById('viewMenu').classList.add('hidden');
+            document.getElementById('viewGame').classList.remove('hidden');
+            
+            const titles = {
+                1: "🪐 Pilihan Ganda Tata Surya",
+                2: "🧩 Drag & Drop Hybrid 3D",
+                3: "🃏 Matching Game Astronomi",
+                4: "🔭 Tebak Gambar Fenomena",
+                5: "🚀 Educational Runner 2D"
+            };
+            document.getElementById('gameTitleHeader').innerText = titles[modeNum];
+            updateHUD();
+            renderActiveGameMode();
+        }
+
+        function backToMenu() {
+            playSound('click');
+            document.getElementById('viewGame').classList.add('hidden');
+            document.getElementById('viewMenu').classList.remove('hidden');
+            gameState.activeMode = null;
+        }
+
+        function addScore(points) {
+            if (gameState.currentTeam === 'A') {
+                gameState.scoreA += points;
+            } else {
+                gameState.scoreB += points;
+            }
+            updateHUD();
+        }
+
+        // Dataset for Mode 1: Pilihan Ganda (5 sample questions + structure for 20)
+        const mcqData = [
+            { q: "Pusat dari sistem tata surya kita adalah...", options: ["Bumi", "Matahari", "Bulan", "Jupiter"], ans: 1 },
+            { q: "Planet terdekat dengan Matahari adalah...", options: ["Venus", "Merkurius", "Mars", "Bumi"], ans: 1 },
+            { q: "Planet terbesar di dalam sistem tata surya kita adalah...", options: ["Saturnus", "Jupiter", "Uranus", "Neptunus"], ans: 1 },
+            { q: "Kala rotasi Bumi (waktu yang diperlukan Bumi berputar pada porosnya) adalah...", options: ["24 Jam", "365 Hari", "29.5 Hari", "12 Jam"], ans: 0 },
+            { q: "Fenomena pergantian tahun disebabkan oleh...", options: ["Rotasi Bumi", "Revolusi Bumi", "Rotasi Bulan", "Revolusi Bulan"], ans: 1 }
+        ];
+
+        // Dataset for Mode 2: Drag & Drop Hybrid (5 items + structure for 20)
+        const dragData = [
+            { item: "Merkurius", target: "Planet Terkecil & Terdekat" },
+            { item: "Venus", target: "Planet Terpanas (Rumah Kaca)" },
+            { item: "Bumi", target: "Planet Berpenghuni Air & Oksigen" },
+            { item: "Mars", target: "Planet Merah" },
+            { item: "Saturnus", target: "Planet Berincin Indah" }
+        ];
+
+        // Dataset for Mode 3: Matching Game (5 pairs + structure for 20)
+        const matchingData = [
+            { id: 1, term: "Rotasi", match: "Poros Bumi" },
+            { id: 2, term: "Revolusi", match: "Orbit Matahari" },
+            { id: 3, term: "Meteor", match: "Bintang Jatuh" },
+            { id: 4, term: "Komet", match: "Bintang Berekor" },
+            { id: 5, term: "Asteroid", match: "Sabuk Utama" }
+        ];
+
+        // Dataset for Mode 4: Tebak Gambar (5 items + structure for 20)
+        const guessData = [
+            { hint: "Fenomena satelit alami bumi tertutup bayangan matahari", answer: "Gerhana Bulan", emoji: "🌑" },
+            { hint: "Cincin spektakuler yang mengelilingi raksasa gas", answer: "Planet Saturnus", emoji: "🪐" },
+            { hint: "Galaksi tempat tata surya kita berada", answer: "Bima Sakti", emoji: "🌌" },
+            { hint: "Batuan luar angkasa yang membakar di atmosfer", answer: "Meteor", emoji: "🌠" },
+            { hint: "Wahana luar angkasa pengorbit bumi", answer: "Satelit", emoji: "🛰️" }
+        ];
+
+        function renderActiveGameMode() {
+            const container = document.getElementById('gameAreaContent');
+            container.innerHTML = '';
+            let mode = gameState.activeMode;
+            let idx = gameState.currentQuestionIndex;
+
+            document.getElementById('gameProgressTracker').innerText = `Tantangan ${idx + 1} / 20`;
+
+            if (mode === 1) {
+                renderMCQ(container, idx);
+            } else if (mode === 2) {
+                renderDragDrop(container, idx);
+            } else if (mode === 3) {
+                renderMatching(container);
+            } else if (mode === 4) {
+                renderGuessImage(container, idx);
+            } else if (mode === 5) {
+                renderRunnerGame(container);
+            }
+        }
+
+        function renderMCQ(container, idx) {
+            let qObj = mcqData[idx % mcqData.length];
+            let isLocked = gameState.lockedItems[1][idx];
+
+            let html = `
+                <div class="glass-panel p-6 md:p-8 rounded-3xl max-w-2xl w-full flex flex-col items-center relative">
+                    ${isLocked ? '<div class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm rounded-3xl flex items-center justify-center z-10 font-orbitron text-amber-400 text-lg font-bold">🔒 TERKUNCI PERMANEN</div>' : ''}
+                    <div class="text-xs uppercase tracking-widest text-cyan-400 font-semibold mb-2">Pilihan Ganda • Giliran Tim ${gameState.currentTeam}</div>
+                    <h3 class="font-orbitron text-lg md:text-xl font-bold text-center mb-6 text-slate-100">${qObj.q}</h3>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+            `;
+            
+            qObj.options.forEach((opt, i) => {
+                html += `<button onclick="handleMCQAnswer(${idx}, ${i}, ${qObj.ans})" class="p-4 glass-panel hover:border-cyan-400 rounded-2xl text-left font-semibold text-sm md:text-base transition clay-btn">${String.fromCharCode(65 + i)}. ${opt}</button>`;
+            });
+
+            html += `</div></div>`;
+            container.innerHTML = html;
+        }
+
+        function handleMCQAnswer(idx, chosen, correct) {
+            if (gameState.lockedItems[1][idx]) return;
+            
+            if (chosen === correct) {
+                playSound('correct');
+                addScore(10);
+                showToast(`🎉 Benar! +10 Poin untuk Tim ${gameState.currentTeam}`);
+            } else {
+                playSound('wrong');
+                showToast(`❌ Kurang tepat! Jawaban benar adalah opsi ${String.fromCharCode(65 + correct)}`);
+            }
+
+            gameState.lockedItems[1][idx] = true;
+            gameState.modeProgress[1] = Math.min(19, gameState.currentQuestionIndex + 1);
+            gameState.currentQuestionIndex = gameState.modeProgress[1];
+            updateHUD();
+            
+            if (gameState.currentQuestionIndex >= 20) {
+                showToast("🏆 Mode Pilihan Ganda Selesai!");
+                setTimeout(backToMenu, 2000);
+            } else {
+                renderActiveGameMode();
+            }
+        }
+
+        function renderDragDrop(container, idx) {
+            let itemObj = dragData[idx % dragData.length];
+            let isLocked = gameState.lockedItems[2][idx];
+
+            let html = `
+                <div class="glass-panel p-6 rounded-3xl max-w-2xl w-full flex flex-col items-center relative">
+                    ${isLocked ? '<div class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm rounded-3xl flex items-center justify-center z-10 font-orbitron text-amber-400 text-lg font-bold">🔒 TERKUNCI PERMANEN</div>' : ''}
+                    <div class="text-xs uppercase tracking-widest text-purple-400 font-semibold mb-2">Drag & Drop Hybrid • Giliran Tim ${gameState.currentTeam}</div>
+                    <p class="text-xs text-slate-300 mb-4 text-center">Seret atau klik item berikut ke target karakteristik tata surya yang sesuai:</p>
+                    
+                    <div id="dragItem" draggable="true" ondragstart="event.dataTransfer.setData('text/plain', '${itemObj.target}')" class="p-5 bg-purple-900/50 border-2 border-purple-400 rounded-2xl font-orbitron font-bold text-purple-200 text-center text-lg mb-6 cursor-grab neon-glow-purple w-full">
+                        🪐 ${itemObj.item}
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+            `;
+
+            let targets = [itemObj.target, "Planet Raksasa Gas", "Benda Langit Lain", "Pusat Orbit Tata Surya"];
+            // Shuffle targets slightly
+            targets.sort(() => Math.random() - 0.5);
+
+            targets.forEach(t => {
+                html += `
+                    <div ondragover="event.preventDefault(); this.classList.add('border-cyan-400')" ondragleave="this.classList.remove('border-cyan-400')" ondrop="handleDrop(event, '${t}', '${itemObj.target}', ${idx})" onclick="handleTouchDrop('${t}', '${itemObj.target}', ${idx})" class="p-4 glass-panel border border-slate-700 hover:border-cyan-400 rounded-2xl text-center cursor-pointer transition">
+                        🎯 ${t}
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            container.innerHTML = html;
+        }
+
+        function handleDrop(e, chosenTarget, correctTarget, idx) {
+            e.preventDefault();
+            processDragResult(chosenTarget, correctTarget, idx);
+        }
+
+        function handleTouchDrop(chosenTarget, correctTarget, idx) {
+            processDragResult(chosenTarget, correctTarget, idx);
+        }
+
+        function processDragResult(chosen, correct, idx) {
+            if (gameState.lockedItems[2][idx]) return;
+
+            if (chosen === correct) {
+                playSound('correct');
+                addScore(10);
+                showToast(`🎉 Cocok! +10 Poin untuk Tim ${gameState.currentTeam}`);
+            } else {
+                playSound('wrong');
+                showToast(`❌ Salah penempatan target!`);
+            }
+
+            gameState.lockedItems[2][idx] = true;
+            gameState.modeProgress[2] = Math.min(19, gameState.currentQuestionIndex + 1);
+            gameState.currentQuestionIndex = gameState.modeProgress[2];
+            updateHUD();
+
+            if (gameState.currentQuestionIndex >= 20) {
+                showToast("🏆 Mode Drag & Drop Selesai!");
+                setTimeout(backToMenu, 2000);
+            } else {
+                renderActiveGameMode();
+            }
+        }
+
+        function renderMatching(container) {
+            let html = `
+                <div class="glass-panel p-6 rounded-3xl max-w-3xl w-full flex flex-col items-center">
+                    <div class="text-xs uppercase tracking-widest text-pink-400 font-semibold mb-2">Matching Game 3D • Giliran Tim ${gameState.currentTeam}</div>
+                    <p class="text-xs text-slate-300 mb-4 text-center">Pasangkan kartu istilah astronomi dengan definisinya:</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full" id="matchingGrid">
+            `;
+
+            matchingData.forEach((pair, i) => {
+                let isLocked = gameState.lockedItems[3][i];
+                html += `
+                    <div onclick="handleCardFlip(${i}, '${pair.term}')" class="h-28 glass-panel rounded-2xl border ${isLocked ? 'border-emerald-400 bg-emerald-950/40' : 'border-pink-500/50 hover:border-pink-400'} flex items-center justify-center text-center p-3 cursor-pointer transition">
+                        <span class="font-orbitron text-xs font-bold text-pink-200">${isLocked ? '🔒 ' + pair.term : '🃏 Kartu #' + (i+1)}</span>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            container.innerHTML = html;
+        }
+
+        let selectedMatchingCard = null;
+        function handleCardFlip(i, term) {
+            if (gameState.lockedItems[3][i]) return;
+            playSound('click');
+            showToast(`Membuka kartu: ${term} — Pasangannya adalah ${matchingData[i].match}`);
+            gameState.lockedItems[3][i] = true;
+            addScore(5);
+            renderMatching();
+        }
+
+        function renderGuessImage(container, idx) {
+            let item = guessData[idx % guessData.length];
+            let isLocked = gameState.lockedItems[4][idx];
+
+            let html = `
+                <div class="glass-panel p-6 rounded-3xl max-w-xl w-full flex flex-col items-center relative">
+                    ${isLocked ? '<div class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm rounded-3xl flex items-center justify-center z-10 font-orbitron text-amber-400 text-lg font-bold">🔒 TERKUNCI PERMANEN</div>' : ''}
+                    <div class="text-xs uppercase tracking-widest text-emerald-400 font-semibold mb-2">Tebak Gambar • Giliran Tim ${gameState.currentTeam}</div>
+                    
+                    <div class="w-48 h-48 rounded-2xl bg-slate-900 border-2 border-emerald-400 flex items-center justify-center text-6xl mb-4 neon-glow-cyan">
+                        ${item.emoji}
+                    </div>
+
+                    <p class="text-xs text-cyan-300 mb-4 text-center italic">Petunjuk: "${item.hint}"</p>
+                    <input type="text" id="guessInput" placeholder="Ketik jawaban di sini..." class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-center text-sm text-white mb-4 focus:outline-none focus:border-emerald-400">
+                    <button onclick="submitGuess(${idx}, '${item.answer}')" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 font-orbitron font-bold text-xs text-white rounded-xl clay-btn">
+                        KIRIM JAWABAN 🚀
+                    </button>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        function submitGuess(idx, correctAns) {
+            if (gameState.lockedItems[4][idx]) return;
+            let val = document.getElementById('guessInput').value.trim().toLowerCase();
+            if (val === correctAns.toLowerCase()) {
+                playSound('correct');
+                addScore(15);
+                showToast("🎉 Jawaban Benar! +15 Poin");
+            } else {
+                playSound('wrong');
+                showToast(`❌ Kurang tepat! Jawaban: ${correctAns}`);
+            }
+
+            gameState.lockedItems[4][idx] = true;
+            gameState.modeProgress[4] = Math.min(19, gameState.currentQuestionIndex + 1);
+            gameState.currentQuestionIndex = gameState.modeProgress[4];
+            updateHUD();
+
+            if (gameState.currentQuestionIndex >= 20) {
+                showToast("🏆 Mode Tebak Gambar Selesai!");
+                setTimeout(backToMenu, 2000);
+            } else {
+                renderActiveGameMode();
+            }
+        }
+
+        function renderRunnerGame(container) {
+            let html = `
+                <div class="glass-panel p-4 rounded-3xl max-w-2xl w-full flex flex-col items-center">
+                    <div class="text-xs uppercase tracking-widest text-amber-400 font-semibold mb-2">Educational Runner • Giliran Tim ${gameState.currentTeam}</div>
+                    <canvas id="runnerCanvas" width="500" height="300" class="w-full bg-slate-950 rounded-2xl border border-amber-500/50 mb-4"></canvas>
+                    <div class="flex space-x-4">
+                        <button onclick="moveRocket(-1)" class="px-6 py-2.5 bg-amber-600 hover:bg-amber-500 font-orbitron font-bold text-xs text-white rounded-xl clay-btn">⬅️ KIRI</button>
+                        <button onclick="moveRocket(1)" class="px-6 py-2.5 bg-amber-600 hover:bg-amber-500 font-orbitron font-bold text-xs text-white rounded-xl clay-btn">KANAN ➡️</button>
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+            initRunnerCanvas();
+        }
+
+        let rocketLane = 1; // 0: Kiri, 1: Tengah, 2: Kanan
+        function moveRocket(dir) {
+            playSound('click');
+            rocketLane = Math.max(0, Math.min(2, rocketLane + dir));
+        }
+
+        function initRunnerCanvas() {
+            const canvas = document.getElementById('runnerCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let obstacleY = 0;
+            let obstacleLane = Math.floor(Math.random() * 3);
+
+            function loop() {
+                if (gameState.activeMode !== 5) return;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Draw lanes
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.2)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(166, 0); ctx.lineTo(166, 300);
+                ctx.moveTo(333, 0); ctx.lineTo(333, 300);
+                ctx.stroke();
+
+                // Draw obstacle (Meteor)
+                obstacleY += 3;
+                if (obstacleY > 300) {
+                    obstacleY = 0;
+                    obstacleLane = Math.floor(Math.random() * 3);
+                    addScore(5); // Survival bonus
+                }
+                let obsX = obstacleLane * 166 + 83;
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath();
+                ctx.arc(obsX, obstacleY, 20, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Draw Rocket
+                let rocketX = rocketLane * 166 + 83;
+                ctx.fillStyle = '#38bdf8';
+                ctx.beginPath();
+                ctx.moveTo(rocketX, 230);
+                ctx.lineTo(rocketX - 15, 270);
+                ctx.lineTo(rocketX + 15, 270);
+                ctx.closePath();
+                ctx.fill();
+
+                // Collision check
+                if (obstacleY > 220 && obstacleY < 270 && obstacleLane === rocketLane) {
+                    playSound('wrong');
+                    showToast("💥 Roket menabrak asteroid! -5 Poin");
+                    if (gameState.currentTeam === 'A') gameState.scoreA = Math.max(0, gameState.scoreA - 5);
+                    else gameState.scoreB = Math.max(0, gameState.scoreB - 5);
+                    updateHUD();
+                    obstacleY = 0;
+                }
+
+                requestAnimationFrame(loop);
+            }
+            loop();
+        }
+    </script>
+</body>
+</html>
